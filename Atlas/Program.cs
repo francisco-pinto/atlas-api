@@ -1,29 +1,21 @@
+using Atlas.Features.Shared;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services
+    .AddControllers()
+    .AddEndpoints();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
+if (!app.Environment.IsDevelopment())
+{ 
+    //TODO: Uncomment this before production. FIx certificate issues 
+    app.UseHttpsRedirection();
 }
 
-app.UseHttpsRedirection();
-
-// This endpoint is for predefined filters
-app.MapGet("/countries/{country-code}/filters", (string countryCode, string filters) =>
-    {
-    })
-    .WithName("");
-
-// This endpoint is for custom filters input by the user
-app.MapGet("/countries/{country-code}/custom-filter", (string countryCode, string customFilters) =>
-    {
-    })
-    .WithName("");
+app.MapControllers();
 
 app.Run();
+
