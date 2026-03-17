@@ -58,3 +58,6 @@ nunit-*.xml
 
 # DotSettings
 *.DotSettings.user
+
+# LaunchSettings.json
+*launchSettings.json

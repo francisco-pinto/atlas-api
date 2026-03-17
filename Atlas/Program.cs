@@ -1,10 +1,13 @@
 using Atlas.Features.Shared;
+using Atlas.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
     .AddControllers()
     .AddEndpoints();
+
+builder.Services.AddSingleton<IGeminiApi, GeminiApi>(); 
 
 var app = builder.Build();
 
