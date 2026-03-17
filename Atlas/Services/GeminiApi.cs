@@ -1,3 +1,4 @@
+using Atlas.PromptTemplates;
 using Google.GenAI;
 
 namespace Atlas.Services;
@@ -35,16 +36,16 @@ public class GeminiApi: IGeminiApi
             ? string.Join(", ", filters)
             : "general information";
 
-        //TODO: UPDATE AND CLEAN THIS PROMPT. PUT IT IN A CONFIG
-        //TODO: OPTIMIZE THE PROMPT TO GET THE BEST RESPONSE WITH THE LEAST TOKENS POSSIBLE
-        var contents = $"Give me 3 facts about the country with the country code {countryCode} related to {filtersText}. " +
-                       "Keep the answer concise and factual with the least amount of letters possible. " +
-                       "If you don't have information about the country or the filters, say 'I don't know'.";
+        //TODO: THIS CAN BE CACHED FOREVER
+        var prompt = await PromptTemplate.GetPromptAsync(
+            filtersText,
+            countryCode,
+            cancellationToken);
         
         var response = await client.Models.GenerateContentAsync(
             model: "models/gemma-3-27b-it", //TODO: PUT THIS IN A CONFIG
-            contents: contents,
-            cancellationToken: cancellationToken 
+            contents: prompt,
+            cancellationToken: cancellationToken
         );
 
         return response.Candidates![0].Content!.Parts![0].Text!;

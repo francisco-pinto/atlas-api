@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Atlas.Features.Countries.GetCountryInfo;
 
-public static class GetCountryInfo
+public static partial class GetCountryInfo
 {
     private sealed record Request
     {
@@ -29,7 +29,6 @@ public static class GetCountryInfo
                 return BadRequest($"Invalid filters: {filtersError}");
             }
             
-            //ask service for data
             var response = await geminiApi.RequestAsync(
                 request.CountryCode, 
                 request.Filters, 

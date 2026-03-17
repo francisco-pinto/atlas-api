@@ -17,4 +17,11 @@
       </Content>
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="PromptTemplates\PromptTemplate.txt" />
+      <EmbeddedResource Include="PromptTemplates\PromptTemplate.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </EmbeddedResource>
+    </ItemGroup>
+
 </Project>

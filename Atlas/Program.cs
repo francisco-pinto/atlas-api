@@ -7,7 +7,7 @@ builder.Services
     .AddControllers()
     .AddEndpoints();
 
-builder.Services.AddSingleton<IGeminiApi, GeminiApi>();
+builder.Services.AddSingleton<IGeminiApi, GeminiApi>(); 
 
 var app = builder.Build();
 
