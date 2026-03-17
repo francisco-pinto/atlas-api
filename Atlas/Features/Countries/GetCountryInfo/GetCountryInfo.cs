@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Atlas.Features.Shared;
 using Atlas.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,7 @@ public static partial class GetCountryInfo
         [FromQuery] public IReadOnlyList<string>? Filters { get; set; }
     }
 
-    
+
     private sealed class Endpoint(IGeminiApi geminiApi) : EndpointBase
     {
         [HttpGet("/api/v1/countries/{country-code}")]
@@ -21,22 +22,31 @@ public static partial class GetCountryInfo
             //validate country code
             if(!Utils.Utils.CountryCodeIsValid(request.CountryCode.ToUpper()))
             {
-                return BadRequest($"Invalid country code: {request.CountryCode}");
+                return BadRequest(new ErrorResponseDto($"Invalid country code: {request.CountryCode}"));
             }
 
             if (!ValidateFilters(request.Filters, out var filtersError))
             {
-                return BadRequest($"Invalid filters: {filtersError}");
+                return BadRequest(new ErrorResponseDto($"Invalid filters: {filtersError}"));
+            }
+
+            var response = await geminiApi.RequestAsync(
+                    request.CountryCode, 
+                    request.Filters, 
+                    ct);
+
+            //TODO: this if is not working. Succes = true or false
+            /*TODO: Sometimes the response from AI is duplicated. In general information
+            it will return multiple topics sometimes*/
+            
+            //TODO: Serialization is not correct
+            if (response!.Contains("success"))
+            {
+                return Ok(JsonSerializer.Deserialize<SuccessResponseDto>(response));
             }
             
-            var response = await geminiApi.RequestAsync(
-                request.CountryCode, 
-                request.Filters, 
-                ct);   
+            return BadRequest(JsonSerializer.Deserialize<ErrorResponseDto>(response));
             
-            //TODO: check notion
-            
-            return Ok(response);
         }
     }
     
