@@ -45,7 +45,7 @@ public static partial class GetCountryInfo
         IReadOnlyList<string>? filters, 
         out string? error)
     {
-        const int maxFilters = 10;
+        const int maxFilters = 5;
         const int maxLength = 50;
         var pattern = SpecialCharactersRegex();
 
