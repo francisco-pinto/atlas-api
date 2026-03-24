@@ -22,8 +22,23 @@ public static class Utils
         "VN", "VU", "WF", "WS", "YE", "YT", "ZA", "ZM", "ZW"
     ];
     
-    
+    private static List<string> ContinentCodes =
+    [
+        "AF", 
+        "AN", 
+        "AS", 
+        "EU", 
+        "NA",
+        "OC",
+        "SA"
+    ];
 
+    public enum Alpha2Code
+    {
+        Continent,
+        Country
+    }
     public static bool CountryCodeIsValid(string countryCode) =>  CountryCodes.Contains(countryCode);
+    public static bool ContinentCodeIsValid(string continentCode) =>  ContinentCodes.Contains(continentCode);
     
 }

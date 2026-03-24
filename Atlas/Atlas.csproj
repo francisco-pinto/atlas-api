@@ -19,7 +19,14 @@
 
     <ItemGroup>
       <None Remove="PromptTemplates\PromptTemplate.txt" />
-      <EmbeddedResource Include="PromptTemplates\PromptTemplate.txt">
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="PromptTemplates\ContinentPromptTemplate.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </EmbeddedResource>
+      <None Remove="PromptTemplates\CountryPromptTemplate.txt" />
+      <EmbeddedResource Include="PromptTemplates\CountryPromptTemplate.txt">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </EmbeddedResource>
     </ItemGroup>
