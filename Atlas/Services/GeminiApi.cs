@@ -1,3 +1,5 @@
+using System.Text.Json;
+using Atlas.Features.Shared;
 using Atlas.PromptTemplates;
 using Google.GenAI;
 
@@ -6,7 +8,7 @@ namespace Atlas.Services;
 public interface IGeminiApi
 {
     Task CustomRequestAsync(string countryCode, IReadOnlyList<string>? filters, CancellationToken cancellationToken);
-    Task<string> RequestAsync(string countryCode, IReadOnlyList<string>? filters, CancellationToken cancellationToken);
+    Task<ResponseDto> RequestAsync(string countryCode, IReadOnlyList<string>? filters, CancellationToken cancellationToken);
 }
 
 public class GeminiApi: IGeminiApi
@@ -26,7 +28,7 @@ public class GeminiApi: IGeminiApi
         Console.WriteLine(response.Candidates[0].Content.Parts[0].Text);*/
     }
     
-    public async Task<string> RequestAsync(
+    public async Task<ResponseDto> RequestAsync(
         string countryCode,
         IReadOnlyList<string>? filters, 
         CancellationToken cancellationToken)
@@ -48,6 +50,23 @@ public class GeminiApi: IGeminiApi
             cancellationToken: cancellationToken
         );
 
-        return response.Candidates![0].Content!.Parts![0].Text!;
+        var sanitizedResponse = response.Candidates![0].Content!.Parts![0].Text!;
+        var doc = JsonDocument.Parse(sanitizedResponse);
+        var success = doc.RootElement.GetProperty("success").GetBoolean();
+        
+        if (success)
+        {
+            return JsonSerializer.Deserialize<SuccessResponseDto>(sanitizedResponse,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                })!;
+        }
+        
+        return JsonSerializer.Deserialize<ErrorResponseDto>(sanitizedResponse,
+            new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            })!;
     }
 }

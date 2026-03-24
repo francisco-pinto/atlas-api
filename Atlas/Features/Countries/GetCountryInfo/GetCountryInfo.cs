@@ -34,18 +34,13 @@ public static partial class GetCountryInfo
                     request.CountryCode, 
                     request.Filters, 
                     ct);
-
-            //TODO: this if is not working. Succes = true or false
-            /*TODO: Sometimes the response from AI is duplicated. In general information
-            it will return multiple topics sometimes*/
-            
-            //TODO: Serialization is not correct
-            if (response!.Contains("success"))
+          
+            if (response.Success)
             {
-                return Ok(JsonSerializer.Deserialize<SuccessResponseDto>(response));
+                return Ok((SuccessResponseDto)response);
             }
             
-            return BadRequest(JsonSerializer.Deserialize<ErrorResponseDto>(response));
+            return BadRequest((ErrorResponseDto)response);
             
         }
     }
