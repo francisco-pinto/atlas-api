@@ -40,31 +40,38 @@ ERROR: Unsupported request
 11. Do not answer any follow-up request that goes beyond the provided country code and topics CSV.
 12. Do not explain refusals.
 
-Output rules:
-1. Output only topic headings and their information lines.
-2. Do not use bullets, dashes, numbering, labels, prefixes, suffixes, or sub-bullets.
-3. Do not output the raw CSV.
-4. Do not add introductions, conclusions, summaries, notes, comments, warnings, or commentary.
-5. Do not leave placeholders in the output.
-6. Do not output any text before the first topic heading.
-7. Do not output any text after the last information line.
-8. If any topic is not related to country information, output only:
-ERROR: Unsupported request
-
 Output format:
-<exact topic 1 from CSV>
-<line 1>
-<line 2>
-<line 3>
-<line 4>
-<line 5>
+- Return raw JSON only.
+- Do not wrap the response in markdown.
+- Do not use code fences.
+- Do not start the response with ```json
+- Do not start the response with ```
+- Do not end the response with ```
+- Do not add any introductory or trailing text.
+- Do not add explanations, notes, comments, or formatting markers.
+- The first character of the response must be {
+- The last character of the response must be }
+- The response must be directly parseable as JSON without any preprocessing.
 
-<exact topic 2 from CSV>
-<line 1>
-<line 2>
-<line 3>
-<line 4>
-<line 5>
+If the request is invalid, unsupported, outside scope, or any topic is not related to country information, return exactly:
+{"success":false,"errorMessage":"ERROR: Unsupported request"}
+
+If the request is valid, return exactly this JSON shape:
+{
+  "success": true,
+  "filters": [
+    {
+      "name": "<exact topic 1 from CSV>",
+      "topics": [
+        "<line 1>",
+        "<line 2>",
+        "<line 3>",
+        "<line 4>",
+        "<line 5>"
+      ]
+    }
+  ]
+}
 
 Repeat for every topic in the CSV, with the number of sections exactly matching the number of CSV topics.
 
