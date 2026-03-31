@@ -1,22 +1,21 @@
-using System.Text.Json;
 using Atlas.Features.Shared;
 using Atlas.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Atlas.Features.Countries.GetCountryInfo;
 
-public static partial class GetCountryInfo
+public static partial class GetCustomCountryInfo
 {
     private sealed record Request
     {
         [FromRoute(Name = "country-code")] public string CountryCode { get; set; }
-        [FromQuery] public IReadOnlyList<string>? Filters { get; set; }
+        [FromQuery] public string Filter { get; set; }
     }
 
 
     private sealed class Endpoint(IGeminiApi geminiApi) : EndpointBase
     {
-        [HttpGet("/api/v1/countries/{country-code}")]
+        [HttpGet("/api/v1/countries/{country-code}/custom")]
         public async Task<IActionResult> HandleAsync(Request request, CancellationToken ct)
         {
             //validate country code
@@ -25,7 +24,7 @@ public static partial class GetCountryInfo
                 return BadRequest(new ErrorResponseDto($"Invalid country code: {request.CountryCode}"));
             }
 
-            if (!FiltersAreValide(request.Filters, out var filtersError))
+            if (!FiltersAreValide(request.Filter, out var filtersError))
             {
                 return BadRequest(new ErrorResponseDto($"Invalid filters: {filtersError}"));
             }
@@ -33,7 +32,7 @@ public static partial class GetCountryInfo
             var response = await geminiApi.RequestAsync(
                 Utils.Utils.Alpha2Code.Country,
                 request.CountryCode, 
-                request.Filters, 
+                request.Filter, 
                 ct);
           
             if (response.Success)
@@ -48,46 +47,31 @@ public static partial class GetCountryInfo
     
     //TODO: ADD THIS TO A MIDDLEWARE
     private static bool FiltersAreValide(
-        IReadOnlyList<string>? filters, 
+        string? filter, 
         out string? error)
     {
         const int maxFilters = 5;
-        const int maxLength = 50;
+        const int maxLength = 100;
         var pattern = SpecialCharactersRegex();
-
-        if (filters == null || filters.Count == 0)
+        
+        var invalids = new List<string>();
+        
+        if (string.IsNullOrWhiteSpace(filter))
         {
             error = null;
             return true;
         }
-
-        var invalids = new List<string>();
-
-        if (filters.Count > maxFilters)
+        
+        if (filter.Length > maxLength)
         {
-            invalids.Add($"too many filters ({filters.Count} > {maxFilters})");
+            invalids.Add($"filter exceeds max length {filter.Length}");
         }
 
-        for (var i = 0; i < filters.Count; i++)
+        if (!pattern.IsMatch(filter.Trim()))
         {
-            var f = filters[i]?.Trim();
-            if (string.IsNullOrEmpty(f))
-            {
-                invalids.Add($"filter[{i}] is empty");
-                continue;
-            }
-
-            if (f.Length > maxLength)
-            {
-                invalids.Add($"filter[{i}] exceeds max length {maxLength}");
-            }
-
-            if (!pattern.IsMatch(f))
-            {
-                invalids.Add($"filter[{i}] contains invalid characters");
-            }
+            invalids.Add($"{filter} contains invalid characters");
         }
-
+        
         if (invalids.Count > 0)
         {
             error = string.Join("; ", invalids);

@@ -1,28 +1,27 @@
-using System.Text.Json;
 using Atlas.Features.Shared;
 using Atlas.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Atlas.Features.Countries.GetCountryInfo;
+namespace Atlas.Features.Continents.GetContinentInfo;
 
-public static partial class GetCountryInfo
+public static partial class GetContinentInfo
 {
     private sealed record Request
     {
-        [FromRoute(Name = "country-code")] public string CountryCode { get; set; }
+        [FromRoute(Name = "continent-code")] public string ContinentCode { get; set; }
         [FromQuery] public IReadOnlyList<string>? Filters { get; set; }
     }
 
 
     private sealed class Endpoint(IGeminiApi geminiApi) : EndpointBase
     {
-        [HttpGet("/api/v1/countries/{country-code}")]
+        [HttpGet("/api/v1/continents/{continent-code}")]
         public async Task<IActionResult> HandleAsync(Request request, CancellationToken ct)
         {
             //validate country code
-            if(!Utils.Utils.CountryCodeIsValid(request.CountryCode.ToUpper()))
+            if(!Utils.Utils.ContinentCodeIsValid(request.ContinentCode.ToUpper()))
             {
-                return BadRequest(new ErrorResponseDto($"Invalid country code: {request.CountryCode}"));
+                return BadRequest(new ErrorResponseDto($"Invalid continent code: {request.ContinentCode}"));
             }
 
             if (!FiltersAreValide(request.Filters, out var filtersError))
@@ -31,8 +30,8 @@ public static partial class GetCountryInfo
             }
 
             var response = await geminiApi.RequestAsync(
-                Utils.Utils.Alpha2Code.Country,
-                request.CountryCode, 
+                Utils.Utils.Alpha2Code.Continent,
+                request.ContinentCode, 
                 request.Filters, 
                 ct);
           
