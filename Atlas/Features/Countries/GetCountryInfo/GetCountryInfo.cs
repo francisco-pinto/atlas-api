@@ -25,7 +25,7 @@ public static partial class GetCountryInfo
                 return BadRequest(new ErrorResponseDto($"Invalid country code: {request.CountryCode}"));
             }
 
-            if (!FiltersAreValide(request.Filters, out var filtersError))
+            if (!FiltersAreValid(request.Filters, out var filtersError))
             {
                 return BadRequest(new ErrorResponseDto($"Invalid filters: {filtersError}"));
             }
@@ -47,7 +47,7 @@ public static partial class GetCountryInfo
     }
     
     //TODO: ADD THIS TO A MIDDLEWARE
-    private static bool FiltersAreValide(
+    private static bool FiltersAreValid(
         IReadOnlyList<string>? filters, 
         out string? error)
     {
@@ -98,6 +98,6 @@ public static partial class GetCountryInfo
         return true;
     }
 
-    [System.Text.RegularExpressions.GeneratedRegex(@"^[A-Za-z0-9\.\-_]+$", System.Text.RegularExpressions.RegexOptions.Compiled)]
+    [System.Text.RegularExpressions.GeneratedRegex(@"^(?:[A-Za-z0-9._\- ]|%20)+$", System.Text.RegularExpressions.RegexOptions.Compiled)]
     private static partial System.Text.RegularExpressions.Regex SpecialCharactersRegex();
 }

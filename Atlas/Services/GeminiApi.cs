@@ -33,7 +33,7 @@ public class GeminiApi: IGeminiApi
     {
         //TODO: VALIDATE IF WE WANT THIS TO BE LIKE THIS
         var filtersText = filters is { Count: > 0 }
-            ? string.Join(", ", filters)
+            ? $"'{string.Join("','", filters)}'"
             : "general information";
 
         //TODO: THIS CAN BE CACHED FOREVER
