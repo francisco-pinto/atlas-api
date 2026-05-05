@@ -60,4 +60,4 @@ nunit-*.xml
 *.DotSettings.user
 
 # LaunchSettings.json
-Properties/launchSettings.json
+**/Properties/launchSettings.json
