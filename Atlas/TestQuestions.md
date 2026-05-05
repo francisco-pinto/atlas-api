@@ -52,4 +52,4 @@
 ## ERRORS
 
 1. Duplicated answers
-2. Is returning that ```json again
+2. Answers are not 100% correct
