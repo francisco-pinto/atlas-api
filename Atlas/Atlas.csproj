@@ -29,6 +29,10 @@
       <EmbeddedResource Include="PromptTemplates\CountryPromptTemplate.txt">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </EmbeddedResource>
+      <None Remove="PromptTemplates\OutputTemplate.txt" />
+      <EmbeddedResource Include="PromptTemplates\OutputTemplate.txt">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </EmbeddedResource>
     </ItemGroup>
 
 </Project>

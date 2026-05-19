@@ -1,15 +1,9 @@
-using System;
-using System.IO;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Atlas.PromptTemplates;
 
 public static class PromptTemplate
 {
-    private static string promptTemplate;
-
     public static async Task<string> GetCustomPromptAsync(
         Utils.Utils.Alpha2Code code,
         string filter,
@@ -23,22 +17,41 @@ public static class PromptTemplate
             "{{CONTINENT_CODE_ALPHA2}}" : 
             "{{COUNTRY_CODE_ALPHA2}}";
         
-        if (string.IsNullOrWhiteSpace(promptTemplate))
-        {
-            var templatePath = new StringBuilder()
-                .Append(AppContext.BaseDirectory)
-                .Append(promptPath)
-                .ToString();
+        var templatePath = new StringBuilder()
+            .Append(AppContext.BaseDirectory)
+            .Append(promptPath)
+            .ToString();
 
-            promptTemplate = await File.ReadAllTextAsync(
-                Path.GetFullPath(templatePath),
-                cancellationToken);
-        }
+        var promptTemplate = await File.ReadAllTextAsync(
+            Path.GetFullPath(templatePath),
+            cancellationToken);
         
         return new StringBuilder()
             .Append(promptTemplate)
             .Replace(placeholder, alpha2Code)
             .Replace("{{TOPICS_CSV}}", filter)
+            .ToString();
+    }
+    
+    public static async Task<string> GetOutputPromptAsync(
+        string rawResponse,
+        CancellationToken cancellationToken)
+    {
+        var promptPath = "PromptTemplates/OutputTemplate.txt";
+        var placeholder = "{{INTERMEDIATE_JSON}}";
+        
+        var templatePath = new StringBuilder()
+                .Append(AppContext.BaseDirectory)
+                .Append(promptPath)
+                .ToString();
+
+        var promptTemplate = await File.ReadAllTextAsync(
+            Path.GetFullPath(templatePath),
+            cancellationToken);
+        
+        return new StringBuilder()
+            .Append(promptTemplate)
+            .Replace(placeholder, rawResponse)
             .ToString();
     }
     
@@ -62,17 +75,15 @@ public static class PromptTemplate
             "{{CONTINENT_CODE_ALPHA2}}" : 
             "{{COUNTRY_CODE_ALPHA2}}";
         
-        if (string.IsNullOrWhiteSpace(promptTemplate))
-        {
-            var templatePath = new StringBuilder()
-                .Append(AppContext.BaseDirectory)
-                .Append(promptPath)
-                .ToString();
+        var templatePath = new StringBuilder()
+            .Append(AppContext.BaseDirectory)
+            .Append(promptPath)
+            .ToString();
 
-            promptTemplate = await File.ReadAllTextAsync(
-                Path.GetFullPath(templatePath),
-                cancellationToken);
-        }
+        var promptTemplate = await File.ReadAllTextAsync(
+            Path.GetFullPath(templatePath),
+            cancellationToken);
+        
         
         return new StringBuilder()
             .Append(promptTemplate)

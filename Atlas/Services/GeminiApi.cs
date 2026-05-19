@@ -2,6 +2,7 @@ using System.Text.Json;
 using Atlas.Features.Shared;
 using Atlas.PromptTemplates;
 using Google.GenAI;
+using Google.GenAI.Types;
 
 namespace Atlas.Services;
 
@@ -23,7 +24,7 @@ public interface IGeminiApi
 public class GeminiApi: IGeminiApi
 {
     private readonly Client client = new();
-    
+    private const string Model = "models/gemma-4-31b-it";
     
     public async Task<ResponseDto> RequestAsync(
         Utils.Utils.Alpha2Code code,
@@ -44,12 +45,12 @@ public class GeminiApi: IGeminiApi
             cancellationToken);
         
         var response = await client.Models.GenerateContentAsync(
-            model: "models/gemma-3-27b-it", //TODO: PUT THIS IN A CONFIG
+            model: Model, //TODO: PUT THIS IN A CONFIG
             contents: prompt,
             cancellationToken: cancellationToken
         );
 
-        var sanitizedResponse = response.Candidates![0].Content!.Parts![0].Text!;
+        var sanitizedResponse = await SanitizeResponseAsync(response, cancellationToken);
         var doc = JsonDocument.Parse(sanitizedResponse);
         var success = doc.RootElement.GetProperty("success").GetBoolean();
         
@@ -67,6 +68,23 @@ public class GeminiApi: IGeminiApi
             {
                 PropertyNameCaseInsensitive = true
             })!;
+    }
+
+    private async Task<string> SanitizeResponseAsync(
+        GenerateContentResponse response,
+        CancellationToken cancellationToken)
+    {
+        var rawResponse = response.Candidates![0].Content!.Parts![0].Text!;
+        
+        var prompt = await PromptTemplate.GetOutputPromptAsync(rawResponse, cancellationToken);
+        
+        var sanitizedResponse = await client.Models.GenerateContentAsync(
+            model: Model, //TODO: PUT THIS IN A CONFIG
+            contents: prompt,
+            cancellationToken: cancellationToken
+        );
+        
+        return sanitizedResponse.Candidates![0].Content!.Parts![0].Text!;
     }
 
     public async Task<ResponseDto> RequestAsync(
