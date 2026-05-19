@@ -1,10 +1,14 @@
 namespace Atlas.Features.Shared;
 
-public record ResponseDto
-{
-    public bool Success {get; init;}
-}
+public abstract record ResponseDto(bool Success);
 
-public record ErrorResponseDto(string ErrorMessage): ResponseDto;
-public record SuccessResponseDto(IReadOnlyCollection<Filter> Filters): ResponseDto;
-public record Filter(string Name, IReadOnlyCollection<string> Topics);
+public sealed record ErrorResponseDto(string ErrorMessage)
+    : ResponseDto(false);
+
+public sealed record SuccessResponseDto(IReadOnlyCollection<Filter> Filters)
+    : ResponseDto(true);
+
+public sealed record Filter(
+    string Name,
+    IReadOnlyCollection<string> Topics
+);

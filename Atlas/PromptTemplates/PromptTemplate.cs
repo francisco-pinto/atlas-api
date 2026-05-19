@@ -33,28 +33,6 @@ public static class PromptTemplate
             .ToString();
     }
     
-    public static async Task<string> GetOutputPromptAsync(
-        string rawResponse,
-        CancellationToken cancellationToken)
-    {
-        var promptPath = "PromptTemplates/OutputTemplate.txt";
-        var placeholder = "{{INTERMEDIATE_JSON}}";
-        
-        var templatePath = new StringBuilder()
-                .Append(AppContext.BaseDirectory)
-                .Append(promptPath)
-                .ToString();
-
-        var promptTemplate = await File.ReadAllTextAsync(
-            Path.GetFullPath(templatePath),
-            cancellationToken);
-        
-        return new StringBuilder()
-            .Append(promptTemplate)
-            .Replace(placeholder, rawResponse)
-            .ToString();
-    }
-    
     public static async Task<string> GetPromptAsync(
         Utils.Utils.Alpha2Code code,
         string filtersText,
@@ -71,9 +49,10 @@ public static class PromptTemplate
         var promptPath = code is Utils.Utils.Alpha2Code.Continent ? 
             "PromptTemplates/ContinentPromptTemplate.txt" : 
             "PromptTemplates/CountryPromptTemplate.txt";
-        var placeholder = code is Utils.Utils.Alpha2Code.Continent ? 
+        var continentPlaceholder = code is Utils.Utils.Alpha2Code.Continent ? 
             "{{CONTINENT_CODE_ALPHA2}}" : 
             "{{COUNTRY_CODE_ALPHA2}}";
+        var topicPlaceholder = "{{FILTERS_CSV}}";
         
         var templatePath = new StringBuilder()
             .Append(AppContext.BaseDirectory)
@@ -84,11 +63,10 @@ public static class PromptTemplate
             Path.GetFullPath(templatePath),
             cancellationToken);
         
-        
         return new StringBuilder()
             .Append(promptTemplate)
-            .Replace(placeholder, alpha2Code)
-            .Replace("{{TOPICS_CSV}}", filtersText)
+            .Replace(continentPlaceholder, alpha2Code)
+            .Replace(topicPlaceholder, filtersText)
             .ToString();
     }
 }
