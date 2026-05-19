@@ -10,5 +10,4 @@ public sealed record SuccessResponseDto(IReadOnlyCollection<Filter> Filters)
 
 public sealed record Filter(
     string Name,
-    IReadOnlyCollection<string> Topics
-);
+    IReadOnlyCollection<string> Topics);

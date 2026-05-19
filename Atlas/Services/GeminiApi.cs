@@ -36,7 +36,6 @@ public class GeminiApi : IGeminiApi
             ? $"'{string.Join("','", filters)}'"
             : "general information";
 
-        //TODO: THIS CAN BE CACHED FOREVER
         var prompt = await PromptTemplate.GetPromptAsync(
             code,
             filtersText,
@@ -44,7 +43,7 @@ public class GeminiApi : IGeminiApi
             cancellationToken);
         //TODO: ADD A TRY CATCH WITH A GENERIC RETURN IN CASE OF BEING DOWN OR ERROR
         var response = await client.Models.GenerateContentAsync(
-            model: Model, //TODO: PUT THIS IN A CONFIG
+            model: Model,
             contents: prompt,
             cancellationToken: cancellationToken,
             config: new GenerateContentConfig()
@@ -55,12 +54,10 @@ public class GeminiApi : IGeminiApi
             }
         );
 
-        var responseParts = response.Candidates?.FirstOrDefault()?.Content?.Parts
-            ?? throw new InvalidOperationException("The Gemini response did not contain any content parts.");
+        var responseParts = response.Candidates?.FirstOrDefault()?.Content?.Parts!;
 
         var sanitizedResponse = responseParts.ElementAtOrDefault(1)?.Text
-            ?? responseParts.ElementAtOrDefault(0)?.Text
-            ?? throw new InvalidOperationException("The Gemini response did not contain any text parts.");
+                                ?? responseParts.ElementAtOrDefault(0)?.Text!;
 
         var doc = JsonDocument.Parse(sanitizedResponse);
         var success = doc.RootElement.GetProperty("success").GetBoolean();
