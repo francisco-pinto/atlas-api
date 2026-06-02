@@ -1,6 +1,7 @@
 using Atlas.Features.Shared;
 using Atlas.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Atlas.Features.Countries.GetCountryInfo;
 
@@ -16,6 +17,7 @@ public static partial class GetCustomCountryInfo
     private sealed class Endpoint(IGeminiApi geminiApi) : EndpointBase
     {
         [HttpGet("/api/v1/countries/{country-code}/custom")]
+        [EnableRateLimiting("fixed")]
         public async Task<IActionResult> HandleAsync(Request request, CancellationToken ct)
         {
             //validate country code

@@ -1,6 +1,7 @@
 using Atlas.Features.Shared;
 using Atlas.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Atlas.Features.Curiosities;
 
@@ -15,6 +16,7 @@ public static class GetCuriosityInfo
     private sealed class Endpoint(IGeminiApi geminiApi) : EndpointBase
     {
         [HttpGet("/api/v1/curiosities/{alpha-code}/{code?}")]
+        [EnableRateLimiting("fixed")]
         public async Task<IActionResult> HandleAsync(Request request, CancellationToken ct)
         {
             if (!string.IsNullOrWhiteSpace(request.Code))
