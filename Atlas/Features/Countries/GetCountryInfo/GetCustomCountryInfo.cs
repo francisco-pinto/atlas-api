@@ -71,6 +71,11 @@ public static partial class GetCustomCountryInfo
         {
             invalids.Add($"{filter} contains invalid characters");
         }
+            
+        if (!FilterList.ContinentFilters.Contains(filter.ToLower()))
+        {
+            invalids.Add($"{filter} is an invalid filter");
+        }
         
         if (invalids.Count > 0)
         {
@@ -82,6 +87,6 @@ public static partial class GetCustomCountryInfo
         return true;
     }
 
-    [System.Text.RegularExpressions.GeneratedRegex(@"^[A-Za-z0-9\.\-_]+$", System.Text.RegularExpressions.RegexOptions.Compiled)]
+    [System.Text.RegularExpressions.GeneratedRegex(@"^[A-Za-z0-9\.\-_\s]+$", System.Text.RegularExpressions.RegexOptions.Compiled)]
     private static partial System.Text.RegularExpressions.Regex SpecialCharactersRegex();
 }

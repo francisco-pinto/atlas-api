@@ -77,11 +77,16 @@ public static partial class GetCustomContinentInfo
             error = string.Join("; ", invalids);
             return false;
         }
+            
+        if (!FilterList.ContinentFilters.Contains(filter.ToLower()))
+        {
+            invalids.Add($"{filter} is an invalid filter");
+        }
 
         error = null;
         return true;
     }
 
-    [System.Text.RegularExpressions.GeneratedRegex(@"^[A-Za-z0-9\.\-_]+$", System.Text.RegularExpressions.RegexOptions.Compiled)]
+    [System.Text.RegularExpressions.GeneratedRegex(@"^[A-Za-z0-9\.\-_\s]+$", System.Text.RegularExpressions.RegexOptions.Compiled)]
     private static partial System.Text.RegularExpressions.Regex SpecialCharactersRegex();
 }

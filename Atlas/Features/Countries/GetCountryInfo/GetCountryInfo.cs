@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Atlas.Features.Shared;
 using Atlas.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +24,7 @@ public static partial class GetCountryInfo
                 return BadRequest(new ErrorResponseDto($"Invalid country code: {request.CountryCode}"));
             }
 
-            if (!FiltersAreValide(request.Filters, out var filtersError))
+            if (!FiltersAreValid(request.Filters, out var filtersError))
             {
                 return BadRequest(new ErrorResponseDto($"Invalid filters: {filtersError}"));
             }
@@ -47,7 +46,7 @@ public static partial class GetCountryInfo
     }
     
     //TODO: ADD THIS TO A MIDDLEWARE
-    private static bool FiltersAreValide(
+    private static bool FiltersAreValid(
         IReadOnlyList<string>? filters, 
         out string? error)
     {
@@ -86,6 +85,11 @@ public static partial class GetCountryInfo
             {
                 invalids.Add($"filter[{i}] contains invalid characters");
             }
+            
+            if (!FilterList.ContinentFilters.Contains(f.ToLower()))
+            {
+                invalids.Add($"filter[{i}] is an invalid filter");
+            }
         }
 
         if (invalids.Count > 0)
@@ -98,6 +102,6 @@ public static partial class GetCountryInfo
         return true;
     }
 
-    [System.Text.RegularExpressions.GeneratedRegex(@"^[A-Za-z0-9\.\-_]+$", System.Text.RegularExpressions.RegexOptions.Compiled)]
+    [System.Text.RegularExpressions.GeneratedRegex(@"^[A-Za-z0-9\.\-_\s]+$", System.Text.RegularExpressions.RegexOptions.Compiled)]
     private static partial System.Text.RegularExpressions.Regex SpecialCharactersRegex();
 }

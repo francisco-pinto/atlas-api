@@ -1,44 +1,40 @@
-using System;
-using System.IO;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Atlas.PromptTemplates;
 
 public static class PromptTemplate
 {
-    private static string promptTemplate;
-
-    public static async Task<string> GetCustomPromptAsync(
+    public static async Task<string> GetCuriositiesPromptAsync(
         Utils.Utils.Alpha2Code code,
-        string filter,
         string alpha2Code,
         CancellationToken cancellationToken)
     {
-        var promptPath = code is Utils.Utils.Alpha2Code.Continent ? 
-            "/PromptTemplates/ContinentPromptTemplate.txt" : 
-            "/PromptTemplates/CountryPromptTemplate.txt";
-        var placeholder = code is Utils.Utils.Alpha2Code.Continent ? 
-            "{{CONTINENT_CODE_ALPHA2}}" : 
-            "{{COUNTRY_CODE_ALPHA2}}";
-        
-        if (string.IsNullOrWhiteSpace(promptTemplate))
+        var promptPath = "";
+        var placeholder = "";
+        switch (code)
         {
-            var templatePath = new StringBuilder()
-                .Append(AppContext.BaseDirectory)
-                .Append(promptPath)
-                .ToString();
-
-            promptTemplate = await File.ReadAllTextAsync(
-                Path.GetFullPath(templatePath),
-                cancellationToken);
+            case Utils.Utils.Alpha2Code.Continent:
+                promptPath = "PromptTemplates/ContinentCuriositiesPromptTemplate.txt";
+                placeholder = "{{CONTINENT_CODE_ALPHA2}}";
+                break;
+            case Utils.Utils.Alpha2Code.Country:
+                promptPath = "PromptTemplates/CountryCuriositiesPromptTemplate.txt";
+                placeholder = "{{COUNTRY_CODE_ALPHA2}}";
+                break;
         }
+        
+        var templatePath = new StringBuilder()
+            .Append(AppContext.BaseDirectory)
+            .Append(promptPath)
+            .ToString();
+
+        var promptTemplate = await File.ReadAllTextAsync(
+            Path.GetFullPath(templatePath),
+            cancellationToken);
         
         return new StringBuilder()
             .Append(promptTemplate)
             .Replace(placeholder, alpha2Code)
-            .Replace("{{TOPICS_CSV}}", filter)
             .ToString();
     }
     
@@ -48,36 +44,27 @@ public static class PromptTemplate
         string alpha2Code,
         CancellationToken cancellationToken)
     {
-        /*TODO: Should we improve the prompt to be more specific?
-         It make sense also to only give country info
-         Like the request the amount_of_population_vila_real is returning error
-         
-         Also improve prompt to be more open to requests. Requesting for longevity
-         in continents did not worked.*/
-
         var promptPath = code is Utils.Utils.Alpha2Code.Continent ? 
             "PromptTemplates/ContinentPromptTemplate.txt" : 
             "PromptTemplates/CountryPromptTemplate.txt";
-        var placeholder = code is Utils.Utils.Alpha2Code.Continent ? 
+        var continentPlaceholder = code is Utils.Utils.Alpha2Code.Continent ? 
             "{{CONTINENT_CODE_ALPHA2}}" : 
             "{{COUNTRY_CODE_ALPHA2}}";
+        var topicPlaceholder = "{{FILTERS_CSV}}";
         
-        if (string.IsNullOrWhiteSpace(promptTemplate))
-        {
-            var templatePath = new StringBuilder()
-                .Append(AppContext.BaseDirectory)
-                .Append(promptPath)
-                .ToString();
+        var templatePath = new StringBuilder()
+            .Append(AppContext.BaseDirectory)
+            .Append(promptPath)
+            .ToString();
 
-            promptTemplate = await File.ReadAllTextAsync(
-                Path.GetFullPath(templatePath),
-                cancellationToken);
-        }
+        var promptTemplate = await File.ReadAllTextAsync(
+            Path.GetFullPath(templatePath),
+            cancellationToken);
         
         return new StringBuilder()
             .Append(promptTemplate)
-            .Replace(placeholder, alpha2Code)
-            .Replace("{{TOPICS_CSV}}", filtersText)
+            .Replace(continentPlaceholder, alpha2Code)
+            .Replace(topicPlaceholder, filtersText)
             .ToString();
     }
 }

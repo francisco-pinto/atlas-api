@@ -26,7 +26,15 @@
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </EmbeddedResource>
       <None Remove="PromptTemplates\CountryPromptTemplate.txt" />
+      <EmbeddedResource Include="PromptTemplates\CountryCuriositiesPromptTemplate.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </EmbeddedResource>
       <EmbeddedResource Include="PromptTemplates\CountryPromptTemplate.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </EmbeddedResource>
+      <None Remove="PromptTemplates\OutputTemplate.txt" />
+      <None Remove="PromptTemplates\ContinentCuriositiesPromptTemplate.txt" />
+      <EmbeddedResource Include="PromptTemplates\ContinentCuriositiesPromptTemplate.txt">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </EmbeddedResource>
     </ItemGroup>
