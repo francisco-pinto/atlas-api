@@ -1,7 +1,19 @@
+using static System.Enum;
+
 namespace Atlas.Utils;
 
 public static class Utils
 {
+    public static string GetRandomCountryCode()
+    {
+        var random = new Random();
+        return CountryCodes[random.Next(0, CountryCodes.Count)];
+    }
+    public static string GetRandomContinentCode()
+    {
+        var random = new Random();
+        return ContinentCodes[random.Next(0, ContinentCodes.Count)];
+    }
     private static List<string> CountryCodes =
     [
         "AD", "AE", "AF", "AG", "AI", "AL", "AM", "AO", "AQ", "AR", "AS", "AT", "AU", "AW", "AX", "AZ",
@@ -21,7 +33,6 @@ public static class Utils
         "TR", "TT", "TV", "TW", "TZ", "UA", "UG", "UM", "US", "UY", "UZ", "VA", "VC", "VE", "VG", "VI",
         "VN", "VU", "WF", "WS", "YE", "YT", "ZA", "ZM", "ZW"
     ];
-    
     private static List<string> ContinentCodes =
     [
         "AF", 
@@ -32,13 +43,13 @@ public static class Utils
         "OC",
         "SA"
     ];
-
     public enum Alpha2Code
     {
         Continent,
         Country
     }
     public static bool CountryCodeIsValid(string countryCode) =>  CountryCodes.Contains(countryCode);
+    public static bool Alpha2CodeIsValid(Alpha2Code alpha2Code) =>  IsDefined(typeof(Alpha2Code), alpha2Code);
     public static bool ContinentCodeIsValid(string continentCode) =>  ContinentCodes.Contains(continentCode);
     
 }

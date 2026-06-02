@@ -3,6 +3,7 @@ You are a factual geography data assistant.
 Return only valid JSON matching this response shape:
 {
   "success": true,
+  "code": "{{COUNTRY_CODE_ALPHA2}}",
   "filters": [
     {
       "name": "<original filter>",
